@@ -2,6 +2,11 @@
 Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.<br>
 基于`VapourSynth`的压制工具（适合字幕组压制用）**（即将开坑）**
 
+## 前言
+* 此文所述的方案由x酱所提出，由Lambholl所整理<br>
+* 此文偏向于科普向，因为有很多字幕组压制并不知道vs的原理（其中有很多还在用avs）<br>
+* 此文假设各字幕组和读者使用`VapourSynth`而非`AviSynth`进行压制
+
 ## 简介
 &nbsp;&nbsp;字幕组，特别是中文字幕组的压制，经常需要同时进行简繁的压制；除此之外，有部分字幕组需要同时压制`1080p`和`720p`的版本<br>
 &nbsp;&nbsp;但是我们发现，这么做浪费了部分压制的算力。为什么这么说呢？我们先来看一个示例的压制脚本代码：
