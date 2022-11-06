@@ -106,6 +106,19 @@ src8.set_output(1)
 &nbsp;&nbsp;**示例编码参数如下：**<br>
 &nbsp;&nbsp;`vspipe -c y4m t.vpy - | ffmpeg -i - -filter_complex [0:v]crop=1920:1080:0:0[v1];[0:v]crop=1920:1080:0:1080,zscale,format=yuv420p[v2];[0:v]crop=1920:1080:0:2160,zscale,format=yuv420p[v3] -map [v1] -c:v libx265 a.mkv -map [v2] -c:v libx264 b.mkv -map [v3] -c:v libx264 c.mkv` (为了尽量简洁，省去了高级编码设置)
 
-在使用了rescale、SMDegrain、TAAmbk等处理的BDRip脚本上测试，输出1440帧的时间从757秒减少到了300秒.
+### 测试数据
+&nbsp;&nbsp;那么，这么做真的能省时间吗？能省多少时间？<br>
+&nbsp;&nbsp;首先，从理论上来说，压制脚本中的画面预处理越多，这么做能节省的时间就越多，例如使用了`rescale`和`bm3d`的脚本，使用此方案能节省的时间一定比上面给出的示例脚本能节省的更多；<br>
+（当然大概也就我们组会在新番上搞`rescale`和`bm3d`了吧）
 
+**因此，我们使用了较为复杂的脚本进行测试：**
+&nbsp;&nbsp;在使用了`rescale`, `SMDegrain`, `TAAmbk`等处理的BDRip脚本上：<br>
+输出1440帧
+
+* 上文所述方案 4.8fps 300s
+* 分开输出 (同时运行) 1.9fps 757s
+* 分开输出 (依次运行) 5.7fps 757s
+
+&nbsp;&nbsp;可见省去了一大半的时间（如果是上面的示例脚本，能省去的时间一定比这个少了）
+<br><br><br>
 考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有[OKEGui](https://github.com/vcb-s/OKEGui)和[staxrip](https://github.com/staxrip/staxrip)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制
