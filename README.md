@@ -105,4 +105,4 @@ src8.set_output(1)
 &nbsp;&nbsp;**示例编码参数如下：**<br>
 &nbsp;&nbsp;`vspipe -c y4m t.vpy - | ffmpeg -i - -filter_complex [0:v]crop=1920:1080:0:0[v1];[0:v]crop=1920:1080:0:1080,zscale,format=yuv420p[v2];[0:v]crop=1920:1080:0:2160,zscale,format=yuv420p[v3] -map [v1] a.mkv -map [v2] b.mkv -map [v3] c.mkv` (为了尽量简洁，省去了高级编码设置)
 
-考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有[OKEGui](https://github.com/vcb-s/OKEGui)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作，也藉此能希望，因为需要压制多个版本而选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制
+考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有[OKEGui](https://github.com/vcb-s/OKEGui)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作，也藉此希望，因为需要压制多个版本而选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制
