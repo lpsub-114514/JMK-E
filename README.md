@@ -112,7 +112,7 @@ src8.set_output(1)
 （当然大概也就我们组会在新番上搞`rescale`和`bm3d`了吧）
 
 **因此，我们使用了较为复杂的脚本进行测试：**<br>
-&nbsp;&nbsp;在使用了`rescale`, `SMDegrain`, `TAAmbk`等处理的BDRip脚本上：<br>
+&nbsp;&nbsp;在使用了`rescale`, `SMDegrain`, `TAAmbk`等处理的`BDRip`脚本上：<br>
 <br>输出1440帧
 
 * 上文所述方案 4.8fps 300s
