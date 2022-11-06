@@ -11,7 +11,7 @@ import mvsfunc as mvf
 import adptvgrnMod as adp
 
 # 字幕组新番 web源 x264 通用脚本
-# 基于 lolihouse 1周年礼包修改
+# 基于 lolihouse 一周年礼包修改
 
 core = vs.core
 #OKE:MEMORY
