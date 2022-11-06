@@ -67,7 +67,7 @@ src8.set_output(1)
   
 &nbsp;&nbsp;同时，显而易见的一件事情是，将字幕内嵌进视频这一步是写在压制脚本中的：<br>
 &nbsp;&nbsp;&nbsp;&nbsp;`res = core.sub.TextFile(out16,ass)` (使用`libass`的情况)；<br>
-&nbsp;&nbsp;&nbsp;&nbsp;`res = core.vsfm.TextSubMod(src8,ass)` (使用`VsFilterMod`的情况)
+&nbsp;&nbsp;&nbsp;&nbsp;`res = core.vsfm.TextSubMod(out16,ass)` (使用`VsFilterMod`的情况)
 
 
 &nbsp;&nbsp;这时候，要压制简繁两个版本，字幕组通常会选择跑两遍这个脚本；<br>
