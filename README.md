@@ -1,6 +1,6 @@
 # JMK-E
 Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.<br>
-基于`VapourSynth`的压制工具（适合字幕组压制用）
+基于`VapourSynth`的压制工具（适合字幕组压制用）**（即将开坑）**
 
 ## 简介
 &nbsp;&nbsp;字幕组，特别是中文字幕组的压制，经常需要同时进行简繁的压制；除此之外，有部分字幕组需要同时压制`1080p`和`720p`的版本<br>
