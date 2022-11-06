@@ -104,6 +104,8 @@ res.set_output()
 src8.set_output(1)
 ```
 &nbsp;&nbsp;**示例编码参数如下：**<br>
-&nbsp;&nbsp;`vspipe -c y4m t.vpy - | ffmpeg -i - -filter_complex [0:v]crop=1920:1080:0:0[v1];[0:v]crop=1920:1080:0:1080,zscale,format=yuv420p[v2];[0:v]crop=1920:1080:0:2160,zscale,format=yuv420p[v3] -map [v1] a.mkv -map [v2] b.mkv -map [v3] c.mkv` (为了尽量简洁，省去了高级编码设置)
+&nbsp;&nbsp;`vspipe -c y4m t.vpy - | ffmpeg -i - -filter_complex [0:v]crop=1920:1080:0:0[v1];[0:v]crop=1920:1080:0:1080,zscale,format=yuv420p[v2];[0:v]crop=1920:1080:0:2160,zscale,format=yuv420p[v3] -map [v1] -c:v libx265 a.mkv -map [v2] -c:v libx264 b.mkv -map [v3] -c:v libx264 c.mkv` (为了尽量简洁，省去了高级编码设置)
 
-考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有[OKEGui](https://github.com/vcb-s/OKEGui)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制
+在使用了rescale、SMDegrain、TAAmbk等处理的BDRip脚本上测试，输出1440帧的时间从757秒减少到了300秒.
+
+考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有[OKEGui](https://github.com/vcb-s/OKEGui)和[staxrip](https://github.com/staxrip/staxrip)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制
