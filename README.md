@@ -5,7 +5,8 @@ Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.
 ## 前言
 * 此文所述的方案由x酱所提出，由Lambholl所整理<br>
 * 此文偏向于科普向，因为有很多字幕组压制并不知道vs的原理（其中有很多还在用avs）<br>
-* 此文假设各字幕组和读者使用`VapourSynth`而非`AviSynth`进行压制
+* 此文假设各字幕组和读者使用`VapourSynth`而非`AviSynth`进行压制<br>
+* **在阅读此文前，请先阅读 VCB-Studio 的[科普教程3](https://vcb-s.com/archives/2726)和[科普教程6](https://vcb-s.com/archives/4738)**
 
 ## 简介
 &nbsp;&nbsp;字幕组，特别是中文字幕组的压制，经常需要同时进行简繁的压制；除此之外，有部分字幕组需要同时压制`1080p`和`720p`的版本<br>
@@ -108,15 +109,15 @@ res=core.std.StackVertical([res,res_sc,res_tc])
 res.set_output()
 src8.set_output(1)
 ```
-> 为什么这么做呢？因为压制 x265 通常输出 10bit，因此选择输出 10bit 的画面；<br>
-> 同时，压制 x264 时选择 8bit，因此比起 x265 来，通常会使用噪点和 dither 来防止色带的产生
+> 为什么这么做呢？因为压制 x265 通常输出 10bit，因此选择输出 10bit 的画面，在压制时再输出 x264 8bit；<br>
+> 同时，压制 x264 时选择 8bit，因此比起 x265 来，通常会使用噪点和 dither 来防止色带的产生。
 
 &nbsp;&nbsp;**示例编码参数如下：**<br>
 &nbsp;&nbsp;`vspipe -c y4m t.vpy - | ffmpeg -i - -filter_complex [0:v]crop=1920:1080:0:0[v1];[0:v]crop=1920:1080:0:1080,zscale,format=yuv420p[v2];[0:v]crop=1920:1080:0:2160,zscale,format=yuv420p[v3] -map [v1] -c:v libx265 a.mkv -map [v2] -c:v libx264 b.mkv -map [v3] -c:v libx264 c.mkv` (为了尽量简洁，省去了高级编码设置)
 
 ### 测试数据
 &nbsp;&nbsp;那么，这么做真的能省时间吗？能省多少时间？<br>
-&nbsp;&nbsp;首先，从理论上来说，压制脚本中的画面预处理越多，这么做能节省的时间就越多，例如使用了`rescale`和`bm3d`的脚本，使用此方案能节省的时间一定比上面给出的示例脚本能节省的更多；<br>
+&nbsp;&nbsp;首先，从理论上来说，压制脚本中的画面预处理越多，这么做能节省的时间就越多。例如，使用了`rescale`和`bm3d`的脚本，使用此方案能节省的时间一定比上面给出的示例脚本能节省的更多；<br>
 （当然大概也就我们组会在新番上搞`rescale`和`bm3d`了吧）
 
 **因此，我们使用了较为复杂的脚本进行测试：**<br>
@@ -129,4 +130,4 @@ src8.set_output(1)
 
 &nbsp;&nbsp;可见省去了一大半的时间（如果是上面的示例脚本，能省去的时间一定比这个少了）
 <br><br><br>
-考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有 [OKEGui](https://github.com/vcb-s/OKEGui) 和 [staxrip](https://github.com/staxrip/staxrip)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制
+考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有 [OKEGui](https://github.com/vcb-s/OKEGui) 和 [staxrip](https://github.com/staxrip/staxrip)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制。
