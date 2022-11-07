@@ -60,7 +60,7 @@ else:
 res.set_output()
 src8.set_output(1)
 ```
-&nbsp;&nbsp;`VapourSynth`基于`Python`，我们可以看到，在这个脚本中，首先是输入片源，然后使用各种导入的第三方库（称之为`滤镜`）对画面进行处理（如降噪、去色带、抗锯齿、加噪等，称之为`画面预处理`），其中处理的结果通过`Python`的变量向下传参，最后输出画面；<br>
+&nbsp;&nbsp;`VapourSynth`基于`Python`，我们可以看到，在这个脚本中，首先是输入片源，，然后将其转换为`16bit`，并使用各种导入的第三方库（称之为`滤镜`）对画面进行处理（如降噪、去色带、抗锯齿、加噪等，称之为`画面预处理`），其中处理的结果通过`Python`的变量向下传参，最后转换回`8bit`，输出画面；<br>
 &nbsp;&nbsp;输出的画面的格式为`Y4M`，`VsPipe`可以执行此脚本，并将执行所得画面输出给`x264`, `x265`, `ffmpeg`等编码器，编码成`H264`, `H265`等格式的视频，最终连同音轨封装进`MP4`, `MKV`等格式的文件中，就得到我们平时播放的视频了。
 
 &nbsp;&nbsp;**例如：**<br>
@@ -108,6 +108,9 @@ res=core.std.StackVertical([res,res_sc,res_tc])
 res.set_output()
 src8.set_output(1)
 ```
+> 为什么这么做呢？因为压制 x265 通常输出 10bit，因此选择输出 10bit 的画面；<br>
+> 同时，压制 x264 时选择 8bit，因此比起 x265 来，通常会使用噪点和 dither 来防止色带的产生
+
 &nbsp;&nbsp;**示例编码参数如下：**<br>
 &nbsp;&nbsp;`vspipe -c y4m t.vpy - | ffmpeg -i - -filter_complex [0:v]crop=1920:1080:0:0[v1];[0:v]crop=1920:1080:0:1080,zscale,format=yuv420p[v2];[0:v]crop=1920:1080:0:2160,zscale,format=yuv420p[v3] -map [v1] -c:v libx265 a.mkv -map [v2] -c:v libx264 b.mkv -map [v3] -c:v libx264 c.mkv` (为了尽量简洁，省去了高级编码设置)
 
@@ -126,4 +129,4 @@ src8.set_output(1)
 
 &nbsp;&nbsp;可见省去了一大半的时间（如果是上面的示例脚本，能省去的时间一定比这个少了）
 <br><br><br>
-考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有[OKEGui](https://github.com/vcb-s/OKEGui)和[staxrip](https://github.com/staxrip/staxrip)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制
+考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有 [OKEGui](https://github.com/vcb-s/OKEGui) 和 [staxrip](https://github.com/staxrip/staxrip)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制
