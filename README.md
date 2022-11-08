@@ -2,8 +2,18 @@
 Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.<br>
 基于`VapourSynth`的压制工具（适合字幕组压制用）**（即将开坑）**
 
+## 目录
+1. [前言](#前言)
+2. [简介](#简介)
+3. [解决思路](#解决思路)
+   1. [方案1](#方案1)
+   2. [方案2](#方案2)
+4. [测试数据](#测试数据)
+5. etc.
+
+
 ## 前言
-* 此文所述的方案由x酱所提出，由Lambholl所整理<br>
+* 此文所述的方案由x酱所提出，由 Lambholl 所整理<br>
 * 此文偏向于科普向，因为有很多字幕组压制并不知道vs的原理（其中有很多还在用avs）<br>
 * 此文假设各字幕组和读者使用`VapourSynth`而非`AviSynth`进行压制<br>
 * **在阅读此文前，请先阅读 VCB-Studio 的[科普教程3](https://vcb-s.com/archives/2726)和[科普教程6](https://vcb-s.com/archives/4738)**
@@ -84,8 +94,11 @@ src8.set_output(1)
 > 假设同时再压制一个 HEVC 内封版本……<br><br>
 > 同一个片源，压制的版本越多，就越能省去算力，因此适合字幕组的压制
 
-### 那么 有办法做到这一点吗？
+*那么，要怎么做到这一点呢？*
 
+### 解决思路
+
+#### 方案1
 &nbsp;&nbsp;经过x酱的思考，发现确实有办法：
 
 &nbsp;&nbsp;&nbsp;&nbsp;可以使用`core.std.StackVertical`将多个画面拼接在一个画面中输出视频，然后使用`ffmepg`将此视频裁剪开来，分别编码成不同的视频；<br>
@@ -115,6 +128,11 @@ src8.set_output(1)
 &nbsp;&nbsp;**示例编码参数如下：**<br>
 &nbsp;&nbsp;`vspipe -c y4m t.vpy - | ffmpeg -i - -filter_complex [0:v]crop=1920:1080:0:0[v1];[0:v]crop=1920:1080:0:1080,zscale,format=yuv420p[v2];[0:v]crop=1920:1080:0:2160,zscale,format=yuv420p[v3] -map [v1] -c:v libx265 a.mkv -map [v2] -c:v libx264 b.mkv -map [v3] -c:v libx264 c.mkv` (为了尽量简洁，省去了高级编码设置)
 
+#### 方案2
+&nbsp;&nbsp;在此方案被提出之后，Jan 大佬又给出了一种[新的解决思路](https://www.skyey2.com/forum.php?mod=viewthread&tid=38690)，其好处是可以调用`x264`和`x265`进行压制，因此可以用上各个自定义版本的编码器（比如说 AmusementClub 编译的 [x265](https://github.com/AmusementClub/x265/releases)）
+
+&nbsp;&nbsp;此思路直接在`vpy`脚本内调用编码器进行编码，目前尚未被我们测试，但是我们相信此方案一定可行；
+
 ### 测试数据
 &nbsp;&nbsp;那么，这么做真的能省时间吗？能省多少时间？<br>
 &nbsp;&nbsp;首先，从理论上来说，压制脚本中的画面预处理越多，这么做能节省的时间就越多。例如，使用了`rescale`和`bm3d`的脚本，使用此方案能节省的时间一定比上面给出的示例脚本能节省的更多；<br>
@@ -124,7 +142,7 @@ src8.set_output(1)
 &nbsp;&nbsp;在使用了`rescale`, `SMDegrain`, `TAAmbk`等处理的`BDRip`脚本上：<br>
 <br>输出1440帧
 
-* 上文所述方案 4.8fps 300s
+* 上文所述方案1 4.8fps 300s
 * 分开输出 (同时运行) 1.9fps 757s
 * 分开输出 (依次运行) 5.7fps 757s
 
