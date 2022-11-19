@@ -13,7 +13,7 @@ Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.
 
 
 ## 前言
-* 此文所述的方案由x酱所提出，由 Lambholl 所整理<br>
+* 此文所述的方案由x酱所提出，由 Lambholl 所整理、ksks补充<br>
 * 此文偏向于科普向，因为有很多字幕组压制并不知道vs的原理（其中有很多还在用avs）<br>
 * 此文假设各字幕组和读者使用`VapourSynth`而非`AviSynth`进行压制<br>
 * **在阅读此文前，请先阅读 VCB-Studio 的[科普教程3](https://vcb-s.com/archives/2726)和[科普教程6](https://vcb-s.com/archives/4738)**
