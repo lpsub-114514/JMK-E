@@ -22,8 +22,8 @@ Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.
 &nbsp;&nbsp;字幕组，特别是中文字幕组的压制，经常需要同时进行简繁的压制；除此之外，有部分字幕组需要同时压制`1080p`和`720p`的版本<br>
 &nbsp;&nbsp;但是我们发现，这么做浪费了部分压制的算力。为什么这么说呢？我们先来看一个示例的压制脚本代码：
 ```python
-# 字幕组新番 web源 x264 通用脚本
-# 基于 lolihouse 一周年礼包修改
+# 字幕组新番 web 源 x264 通用脚本
+# 基于 LoliHouse 一周年礼包修改
 import vapoursynth as vs
 import mvsfunc as mvf
 import adptvgrnMod as adp
