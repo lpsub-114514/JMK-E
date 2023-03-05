@@ -84,7 +84,7 @@ src8.set_output(1)
 &nbsp;&nbsp;&nbsp;&nbsp;`res = core.vsfm.TextSubMod(out16,ass)` (使用`VSFilterMod`的情况)
 
 
-&nbsp;&nbsp;这时候，要压制简繁两个版本，字幕组通常会选择跑两遍这个脚本；<br>
+&nbsp;&nbsp;这时候，要压制简繁两个版本，有些字幕组通常会选择跑两遍这个脚本；<br>
 &nbsp;&nbsp;但是显而易见的事情是，这么做会把相同的画面预处理执行两遍，而画面预处理这一步又是**十分耗费算力**的（特别是我们平时使用的压制脚本中包含了`rescale`和`bm3d`等）<br>
 &nbsp;&nbsp;那么假设能把简繁两个版本使用同一个脚本输出，那么就只需要做一遍相同的画面预处理，将此结果分别内嵌字幕输出，就可以省去不少算力。<br>
 > 假设压制简繁两个版本，就可以省去一次画面预处理；<br>
@@ -127,14 +127,13 @@ res.set_output()
 &nbsp;&nbsp;`vspipe -c y4m t.vpy - | ffmpeg -i - -filter_complex [0:v]crop=1920:1080:0:0[v1];[0:v]crop=1920:1080:0:1080,zscale,format=yuv420p[v2];[0:v]crop=1920:1080:0:2160,zscale,format=yuv420p[v3] -map [v1] -c:v libx265 a.mkv -map [v2] -c:v libx264 b.mkv -map [v3] -c:v libx264 c.mkv` (为了尽量简洁，省去了高级编码设置)
 
 #### 方案2
-&nbsp;&nbsp;在此方案被提出之后，Jan 大佬又给出了一种[新的解决思路](https://www.skyey2.com/forum.php?mod=viewthread&tid=38690)，其好处是可以调用多个或多种编码器进行压制，因此可以用上各个自定义版本的编码器（比如说 AmusementClub 编译的 [x265](https://github.com/AmusementClub/x265/releases)）
+&nbsp;&nbsp;在此方案被提出之后，AutoEncoder 大佬又给出了一种[新的解决思路](https://www.skyey2.com/forum.php?mod=viewthread&tid=38690)，其好处是可以调用多个或多种编码器进行压制，因此可以用上各个自定义版本的编码器（比如说 AmusementClub 编译的 [x265](https://github.com/AmusementClub/x265/releases)）
 
-&nbsp;&nbsp;此思路直接在脚本内调用编码器进行编码，目前我们已在`VS R60`上进行了测试并进行了应用（同时压制简繁内嵌版本）。但受限于`VS R60`仍旧不支持不同格式的视频输出，所以目前只能同时压制同格式的视频。
+&nbsp;&nbsp;此思路直接在一个 python 脚本内调用编码器进行编码，目前我们已在 VapourSynth 的 R60 版本上进行了测试并进行了应用（同时压制简繁内嵌版本）。但受限于 R60 版本仍旧不支持不同格式的视频输出，所以目前只能同时压制同格式的视频。（[R61](https://github.com/vapoursynth/vapoursynth/releases/tag/R61)已经出了）
 
 ### 测试数据
 &nbsp;&nbsp;那么，这么做真的能省时间吗？能省多少时间？<br>
-&nbsp;&nbsp;首先，从理论上来说，压制脚本中的画面预处理越多，这么做能节省的时间就越多。例如，使用了`rescale`和`bm3d`的脚本，使用此方案能节省的时间一定比上面给出的示例脚本能节省的更多；<br>
-~&nbsp;&nbsp;（当然大概也就我们组会在新番上搞 rescale 和 bm3d 了吧）~
+&nbsp;&nbsp;首先，从理论上来说，压制脚本中的画面预处理越多，这么做能节省的时间就越多。例如，使用了[`xvs.rescalef`](https://github.com/xyx98/my-vapoursynth-script/blob/master/xvs.py)和[`bm3d`](https://github.com/WolframRhodium/VapourSynth-BM3DCUDA)的脚本，使用此方案能节省的时间一定比上面给出的示例脚本能节省的更多；<br>
 
 **因此，我们使用了较为复杂的脚本进行测试：**<br>
 
@@ -152,10 +151,10 @@ res.set_output()
 | 上文所述方案2      | 6fps | 3.1h |
 | 分开输出 (依次运行) | 3.5fps | 5.3h |
 
-> 上述的两个方案都由不同的片源和机器测试，因此结果的对比存在一定的不准确性。但是根据 Jan 大佬的说法，可以确认的是方案2是由于`FrameEval`消耗了一定的算力和时间（当然`ffmpeg`的裁剪分割也会）。
+> 上述的两个方案都由不同的片源和机器测试，因此结果的对比存在一定的不准确性。但是根据 AutoEncoder 大佬的说法，可以确认的是方案2是由于`FrameEval`消耗了一定的算力和时间（当然`ffmpeg`的裁剪分割也会）。
 
 <br>不过可见的是，这两个方案都能省下很多的算力和时间。不过如果是像上面的开销较小的示例脚本，能省去的时间就比这个少了。除非你用 CPU 跑`KNLM`（
 
 ---
 
-考虑到新兴的压制工具`VapourSynth`到现在为止较为成熟的`GUI`工具只有 [OKEGui](https://github.com/vcb-s/OKEGui) 和 [staxrip](https://github.com/staxrip/staxrip)，而其使用门槛对一般人来说也有点高，因此我们开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制。
+考虑到到目前为止使用`VapourSynth`作为帧服务器、且较为方便和成熟的`GUI`工具似乎只有 [OKEGui](https://github.com/vcb-s/OKEGui) 和 [staxrip](https://github.com/staxrip/staxrip)，而它们使用相对也较为复杂，因此我们才开始了这款压制工具的制作；也藉此希望，因为需要压制多个版本而无奈选择裸压的一些字幕组后期，能因为这个压制方案的出现，而选择使用非裸压脚本进行压制。
