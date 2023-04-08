@@ -1,6 +1,6 @@
 # JMK-E
 Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.<br>
-基于`VapourSynth`的压制工具（适合字幕组压制用）**（即将开坑）**
+基于`VapourSynth`的压制工具（适合字幕组压制用）**（赶工中...）**
 
 ## 目录
 1. [前言](#前言)
@@ -14,7 +14,7 @@ Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.
 
 ## 前言
 * 此文所述的方案由x酱所提出，由 Lambholl 所整理、ksks补充<br>
-* 此文偏向于科普向，因为有很多字幕组压制并不知道vs的原理（其中有很多还在用avs）<br>
+* 此文偏向于科普向，因为有很多字幕组压制并不知道 VS 的原理（其中有很多还在用 AVS）<br>
 * 此文假设各字幕组和读者使用`VapourSynth`而非`AviSynth`进行压制<br>
 * **在阅读此文前，请先阅读 VCB-Studio 的[科普教程3](https://vcb-s.com/archives/2726)和[科普教程6](https://vcb-s.com/archives/4738)**
 
@@ -22,7 +22,7 @@ Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.
 &nbsp;&nbsp;字幕组，特别是中文字幕组的压制，经常需要同时进行简繁的压制；除此之外，有部分字幕组需要同时压制`1080p`和`720p`的版本<br>
 &nbsp;&nbsp;但是我们发现，这么做浪费了部分压制的算力。为什么这么说呢？我们先来看一个示例的压制脚本代码：
 ```python
-# 字幕组新番 web 源 x264 通用脚本
+# 字幕组新番 Web 源 x264 通用脚本
 # 基于 LoliHouse 一周年礼包修改
 import vapoursynth as vs
 import mvsfunc as mvf
@@ -69,8 +69,8 @@ else:
 res.set_output()
 src8.set_output(1)
 ```
-&nbsp;&nbsp;`VapourSynth`基于`Python`。我们可以看到，在这个脚本中，首先是用`LWLibavSource`读取 8bit 的 web 源，然后使用`mvf.Depth()`将位深转换为 16bit ，接着使用已导入各种的第三方库（称之为`滤镜`）对画面进行处理（如降噪、去色带、加噪等，称之为`画面预处理`）。其中处理的结果通过`Python`的变量向下传参，最后加上字幕滤镜，转换回 8bit ，输出画面；<br>
-&nbsp;&nbsp;输出的画面的格式为`Y4M`，`VSPipe`可以执行此脚本，并将执行所得画面输出给`x264`, `x265`, `ffmpeg`等编码器，编码成`H264`, `H265`等格式的视频，最终连同音轨封装进`MP4`, `MKV`等格式的文件中，就得到我们平时播放的视频了。
+&nbsp;&nbsp;`VapourSynth`基于`Python`。我们可以看到，在这个脚本中，首先是用`LWLibavSource`读取 8bit 的 Web 源，然后使用`mvf.Depth()`将位深转换为 16bit ，接着使用已导入各种的第三方库（称之为`滤镜`）对画面进行处理（如降噪、去色带、加噪等，称之为`画面预处理`）。其中处理的结果通过`Python`的变量向下传参，最后加上字幕滤镜，转换回 8bit ，输出画面；<br>
+&nbsp;&nbsp;输出的画面的格式为`Y4M`，`VSPipe`可以执行此脚本，并将执行所得画面输出给`x264`, `x265`, `ffmpeg`等编码器，编码成`H.264/AVC`, `H.265/HEVC`等格式的视频，最终连同音轨封装进`MP4`, `MKV`之类的容器中，就得到我们平时播放的视频了。
 
 &nbsp;&nbsp;**例如：**<br>
 `vspipe -c y4m 114514.vpy - | ffmpeg -i - -c:v libx264 -preset veryslow -profile:v high -crf 19 -x264opts "deblock=-1,-1:keyint=480:min-keyint=1:ref=9:vbv-bufsize=35000:vbv-maxrate=34000:chroma-qp-offset=1:qcomp=0.65:rc-lookahead=80:aq-mode=3:aq-strength=0.90:merange=24:psy-rd=0.60,0.20:no-fast-pskip:subme=10" 114514.mkv`
@@ -85,7 +85,7 @@ src8.set_output(1)
 
 
 &nbsp;&nbsp;这时候，要压制简繁两个版本，有些字幕组通常会选择跑两遍这个脚本；<br>
-&nbsp;&nbsp;但是显而易见的事情是，这么做会把相同的画面预处理执行两遍，而画面预处理这一步又是**十分耗费算力**的（特别是我们平时使用的压制脚本中包含了`rescale`和`bm3d`等）<br>
+&nbsp;&nbsp;但是显而易见的事情是，这么做会把相同的画面预处理执行两遍，而画面预处理这一步又是**十分耗费算力**的（特别是我们平时使用的压制脚本中包含了`BM3D`等高耗能的滤镜）<br>
 &nbsp;&nbsp;那么假设能把简繁两个版本使用同一个脚本输出，那么就只需要做一遍相同的画面预处理，将此结果分别内嵌字幕输出，就可以省去不少算力。<br>
 > 假设压制简繁两个版本，就可以省去一次画面预处理；<br>
 > 假设同时再压制一个 720p 的版本，就可以省去三次画面预处理；<br>
@@ -129,7 +129,7 @@ res.set_output()
 #### 方案2
 &nbsp;&nbsp;在此方案被提出之后，AutoEncoder 大佬又给出了一种[新的解决思路](https://www.skyey2.com/forum.php?mod=viewthread&tid=38690)，其好处是可以调用多个或多种编码器进行压制，因此可以用上各个自定义版本的编码器（比如说 AmusementClub 编译的 [x265](https://github.com/AmusementClub/x265/releases)）
 
-&nbsp;&nbsp;此思路直接在一个 python 脚本内调用编码器进行编码，目前我们已在 VapourSynth 的 R60 版本上进行了测试并进行了应用（同时压制简繁内嵌版本）。但受限于 R60 版本仍旧不支持不同格式的视频输出，所以目前只能同时压制同格式的视频。（[R61](https://github.com/vapoursynth/vapoursynth/releases/tag/R61)已经出了）
+&nbsp;&nbsp;此思路直接在一个 python 脚本内调用编码器进行编码，目前我们已在 VapourSynth 的 R60 版本上进行了测试并进行了应用（同时压制简繁内嵌版本）。（[R61](https://github.com/vapoursynth/vapoursynth/releases/tag/R61)已经出了）
 
 ### 测试数据
 &nbsp;&nbsp;那么，这么做真的能省时间吗？能省多少时间？<br>
@@ -151,9 +151,9 @@ res.set_output()
 | 上文所述方案2      | 6fps | 3.1h |
 | 分开输出 (依次运行) | 3.5fps | 5.3h |
 
-> 上述的两个方案都由不同的片源和机器测试，因此结果的对比存在一定的不准确性。但是根据 AutoEncoder 大佬的说法，可以确认的是方案2是由于`FrameEval`消耗了一定的算力和时间（当然`ffmpeg`的裁剪分割也会）。
+> 上述的两个方案使用了不同的片源和机器测试，因此结果的对比存在一定的不准确性。根据 AutoEncoder 大佬的说法，可以确认的是方案2是由于`FrameEval`消耗了一定的算力和时间（当然`ffmpeg`的裁剪分割也会）。
 
-<br>不过可见的是，这两个方案都能省下很多的算力和时间。不过如果是像上面的开销较小的示例脚本，能省去的时间就比这个少了。除非你用 CPU 跑`KNLM`（
+<br>不过可见的是，这两个方案都能省下不少的算力和时间。但如果是像上面的开销较小的示例脚本，能省去的时间就比这个少了。除非你用 CPU 跑`KNLM`（
 
 ---
 
