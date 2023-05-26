@@ -53,9 +53,7 @@ debd  = core.f3kdb.Deband(nr16,12,24,16,16,0,0,output_depth=16)
 debd  = core.f3kdb.Deband(debd,20,56,32,32,0,0,output_depth=16)
 debd  = mvf.LimitFilter(debd,nr16,thr=0.6,thrc=0.5,elast=2.0)
 debd  = core.std.MaskedMerge(debd,nr16,nrmask,first_plane=True)
-#Addnoise
-adn = adp.adptvgrnMod(debd, strength=0.50, size=1.5, sharp=30, static=False, luma_scaling=12, grain_chroma=False)
-out16 = core.std.MaskedMerge(adn,debd,nrmask,first_plane=True)
+out16=debd
 #OKE:DEBUG
 debug = 0
 if debug:
