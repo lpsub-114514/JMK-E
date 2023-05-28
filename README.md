@@ -30,7 +30,7 @@ import mvsfunc as mvf
 #OKE:MEMORY
 core.max_cache_size = 30000
 #OKE:INPUTFILE
-A = R"E:\Animations\4个人各自有着自己的秘密\[SubsPlease] 4-nin wa Sorezore Uso wo Tsuku - 02 (1080p) [A5D310BC].mkv" # 片源
+A = r"E:\Animations\4个人各自有着自己的秘密\[SubsPlease] 4-nin wa Sorezore Uso wo Tsuku - 02 (1080p) [A5D310BC].mkv" # 片源
 ass = A[:-4]+'.sc.ass'
 src8 = core.lsmas.LWLibavSource(A)
 src16 = mvf.Depth(src8, depth=16)
