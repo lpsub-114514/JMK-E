@@ -72,7 +72,7 @@ res.set_output()
 sub_o.set_output(1)
 ```
 &nbsp;&nbsp;`VapourSynth`基于`Python`。我们可以看到，在这个脚本中，首先是用`LWLibavSource`读取 8bit 的 Web 源，然后使用`mvf.Depth()`将位深转换为 16bit ，接着使用已导入各种的第三方库（称之为`滤镜`）对画面进行处理（如降噪、去色带、加噪等，称之为`画面预处理`）。其中处理的结果通过`Python`的变量向下传参，最后加上字幕滤镜，转换回 8bit ，输出画面；<br>
-&nbsp;&nbsp;输出的画面的格式为`Y4M`，`VSPipe`可以执行此脚本，并将执行所得画面输出给`x264`, `x265`, `ffmpeg`等编码器，编码成`H.264/AVC`, `H.265/HEVC`等格式的视频，最终连同音轨封装进`MP4`, `MKV`之类的容器中，就得到我们平时播放的视频了。
+&nbsp;&nbsp;`VSPipe`可以执行此脚本，输出的画面的格式为`Y4M`，并将执行所得画面输出给`x264`, `x265`, `ffmpeg`等编码器，编码成`H.264/AVC`, `H.265/HEVC`等格式的视频，最终连同音轨封装进`MP4`, `MKV`之类的容器中，就得到我们平时播放的视频了。
 
 &nbsp;&nbsp;**例如：**<br>
 `vspipe -c y4m 114514.vpy - | ffmpeg -i - -c:v libx264 -preset veryslow -profile:v high -crf 19 -x264opts "deblock=-1,-1:keyint=480:min-keyint=1:ref=9:vbv-bufsize=35000:vbv-maxrate=34000:chroma-qp-offset=1:qcomp=0.65:rc-lookahead=80:aq-mode=3:aq-strength=0.90:merange=24:psy-rd=0.60,0.20:no-fast-pskip:subme=10" 114514.mkv`
