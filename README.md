@@ -27,6 +27,7 @@ Jimaku Encoder based on `VapourSynth`, which suits for Subtitle Groups encoding.
 from vapoursynth import core
 import vapoursynth as vs
 import mvsfunc as mvf
+import xvs
 #OKE:MEMORY
 core.max_cache_size = 30000
 #OKE:INPUTFILE
@@ -42,14 +43,7 @@ nr16y = core.knlm.KNLMeansCL(src16, d=2, a=2, s=3,  h=0.8, wmode=2, device_type=
 nr16uv = core.knlm.KNLMeansCL(down444, d=2, a=1, s=3,  h=0.4, wmode=2, device_type="GPU")
 nr16 = core.std.ShufflePlanes([nr16y,nr16uv], [0,1,2], vs.YUV)
 #Deband
-nr8    = mvf.Depth(nr16, depth=8)
-luma   = core.std.ShufflePlanes(nr8, 0, vs.GRAY)
-nrmasks = core.tcanny.TCanny(luma,sigma=0.8,op=2,mode=1,planes=0).std.Expr('x 7 < 0 65535 ?',vs.GRAY16)
-nrmaskb = core.tcanny.TCanny(luma,sigma=1.3,t_h=6.5,op=2,planes=0)
-nrmaskg = core.tcanny.TCanny(luma,sigma=1.1,t_h=5.0,op=2,planes=0)
-nrmask  = core.std.Expr([nrmaskg,nrmaskb,nrmasks, luma],"a 20 < 65535 a 48 < x 256 * a 96 < y 256 * z ? ? ?",vs.GRAY16)
-nrmask  = core.std.Maximum(nrmask,0).std.Maximum(0).std.Minimum(0)
-nrmask  = core.rgvs.RemoveGrain(nrmask,20)
+nrmask = xvs.mwdbmask(nr16)
 debd  = core.f3kdb.Deband(nr16,8,36,24,24,0,0,output_depth=16)
 debd  = core.f3kdb.Deband(debd,15,48,36,36,0,0,output_depth=16)
 debd  = mvf.LimitFilter(debd, nr16, thr=0.6, thrc=0.5, elast=2.0)
